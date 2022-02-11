@@ -82,14 +82,14 @@ function load_json(fname::String)
             if length(res) == 0
                 for i in 1:out_length
                     push!(res, uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths))
-                    # For irregular Monte Carlo chains one could use but this is not save
+                    # For irregular Monte Carlo chains one could use the following line but there are special cases which are not possible in ADerrors
                     # push!(res, uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths, int_cnfg_numbers, sum(rep_lengths)))
                 end
             else
                 for i in 1:out_length
                     res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths)
-                    # For irregular Monte Carlo chains one could use but this is not save
-                    res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths, int_cnfg_numbers, sum(rep_lengths))
+                    # For irregular Monte Carlo chains one could use the following line but there are special cases which are not possible in ADerrors
+                    # res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths, int_cnfg_numbers, sum(rep_lengths))
                 end
             end
         end
