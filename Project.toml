@@ -11,3 +11,9 @@ GZip = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 TensorCast = "02d47bb6-7ce6-556a-be16-bb1710789e2b"
 TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
