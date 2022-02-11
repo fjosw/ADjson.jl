@@ -17,5 +17,9 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.julia-arch }}
-      - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-runtest@v1
+      - name: Install
+        run: |
+          julia -e 'using Pkg; Pkg.add(url="https://gitlab.ift.uam-csic.es/alberto/bdio.jl")'
+          julia -e 'using Pkg; Pkg.add(url="https://gitlab.ift.uam-csic.es/alberto/ADerrors.jl")'
+          julia -e 'using Pkg; Pkg.add(url="https://github.com/fjosw/ADjson.jl")'
+          julia -e 'using Pkg; Pkg.test("ADjson")'
