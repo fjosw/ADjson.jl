@@ -31,7 +31,7 @@ A single observable can be written to a file as described in the following examp
 using ADerrors
 using ADjson
 
-# Create a 
+# Create a test observable
 test_obs = uwreal(rand(100), "Test ensemble")
 
 # Write the observable to a file with a description 
@@ -40,6 +40,7 @@ dump_to_json(test_obs, "test_file", "This file contains a test observable.")
 # Read the observable from disk
 check = load_json("test_file")
 
+# Check that the observable was corretly reconstructed
 iamzero = test - check
 uwerr(iamzero)
 println(iamzero)
@@ -48,7 +49,7 @@ println(iamzero)
 
 ADjson.jl can also directly write a vector of `uwreal` objects to disc
 ```Julia
-test_obs = uwreal(rand(100), "Test ensemble")
+test_obs = uwreal(rand(100), "Test ensemble") + uwreal(rand(20), "Second shorter test ensemble")
 
-dump_to_json([test_obs, test_obs, test_obs], "vector_file", "File contains three times the test observable.")
+dump_to_json([test_obs, test_obs, test_obs], "vector_file", "File contains three times a test observable which is defined on two ensembles.")
 ```
