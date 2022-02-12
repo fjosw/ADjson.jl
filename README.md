@@ -15,16 +15,17 @@ julia -e 'using Pkg; Pkg.add(url="https://github.com/fjosw/ADjson.jl")'
 ### Features
 At the moment ADjson.jl supports only a subset of the full `json.gz`-pyerrors specification.
 
-ADjson.jl can read data types
-- `Obs`
-- `List`
+| | `Obs` | `List` | `Array` | `Corr` |
+| :---: | :---: | :---: | :---: | :---: |
+| read | :heavy_check_mark: | :heavy_check_mark: | :heavy_multiplication_x: | :heavy_multiplication_x: |
+| write | :heavy_check_mark: | :heavy_multiplication_x: | :heavy_multiplication_x: | :heavy_multiplication_x: |
 
-ADjson.jl can write data types
-- `Obs`
+#### Notes
+- ADerrors.jl always assumes that replica are labeled as r0, r1, etc. Custom replica names in `json.gz` files get lost in the conversion.
+- ADerrors.jl does not support array valued constants with cross correlations. If such a constants is found in a `json.gz` file ADjson.jl throws an error.
+- Reading files with gaps in the Monte Carlo history is not yet supported as not all cases supported by pyerrors can be correctly initialized in ADerrors.jl. For now ADjson.jl throws an error in case such an observable is encountered.
 
-Also reading files with gaps in the Monte Carlo history is not yet supported as not all cases supported by pyerrors can be correctly initialized in ADerrors.
-
-### Example
+### Examples
 A single observable can be written to a file as described in the following example
 ```Julia
 using ADerrors
