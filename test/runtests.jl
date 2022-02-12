@@ -6,7 +6,7 @@ using Test
 load_json("./data/pyerrors_out")
 
 # Write file to disk, read it and check equality
-test = uwreal(rand(100), "Test ensemble")
+test = uwreal(rand(4000), "Test ensemble")
 dump_to_json(test, "test_file", "my description")
 test2= load_json("test_file")
 
