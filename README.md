@@ -22,7 +22,7 @@ ADjson.jl can read data types
 ADjson.jl can write data types
 - `Obs`
 
-Reading and writing constants with errors is not yet supported.
+Constants with errors can only be read in, writing is not yet supported.
 Also reading files with gaps in the Monte Carlo history is not yet supported as not all cases supported by pyerrors can be correctly initialized in ADerrors.
 
 ### Example

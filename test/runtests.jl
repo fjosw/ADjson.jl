@@ -5,6 +5,9 @@ using Test
 # Check if file produced by pyerrors can be read.
 load_json("./data/pyerrors_out")
 
+# Check if file with a constant produced by pyerrors can be read.
+load_json("./data/covobs_out")
+
 # Write file to disk, read it and check equality
 test = uwreal(rand(4000), "Test ensemble")
 dump_to_json(test, "test_file", "my description")

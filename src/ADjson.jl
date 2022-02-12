@@ -55,41 +55,63 @@ function load_json(fname::String)
 
         res = Vector{uwreal}()
         out_length = parse(Int,(entry["layout"]))
-        for element in entry["data"]
 
-            conc_deltas = [Float64[] for b in 1:out_length]
-            int_cnfg_numbers = Int[]
-            rep_lengths = Int[]
+        if haskey(entry, "data")
+            for element in entry["data"]
 
-            for rep in element["replica"]
-                my_arr = rep["deltas"]
-                @cast deltas[i][j] := my_arr[j][i]
-                cnfg_numbers = convert(Array{Int,1}, deltas[1])
+                conc_deltas = [Float64[] for b in 1:out_length]
+                int_cnfg_numbers = Int[]
+                rep_lengths = Int[]
 
-                for ch in 1:length(cnfg_numbers)
-                    if ch != cnfg_numbers[ch]
-                        error("Irregular Monte Carlo chain cannot be safely read into ADerrors.")
+                for rep in element["replica"]
+                    my_arr = rep["deltas"]
+                    @cast deltas[i][j] := my_arr[j][i]
+                    cnfg_numbers = convert(Array{Int,1}, deltas[1])
+
+                    for ch in 1:length(cnfg_numbers)
+                        if ch != cnfg_numbers[ch]
+                            error("Irregular Monte Carlo chain cannot be safely read into ADerrors.")
+                        end
+                    end
+
+                    append!(int_cnfg_numbers, cnfg_numbers)
+                    append!(rep_lengths, length(cnfg_numbers))
+                    for i in 1:out_length
+                        append!(conc_deltas[i], Vector{Float64}(deltas[i + 1]))
                     end
                 end
 
-                append!(int_cnfg_numbers, cnfg_numbers)
-                append!(rep_lengths, length(cnfg_numbers))
-                for i in 1:out_length
-                    append!(conc_deltas[i], Vector{Float64}(deltas[i + 1]))
+                if length(res) == 0
+                    for i in 1:out_length
+                        push!(res, uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths))
+                        # For irregular Monte Carlo chains one could use the following line but there are special cases which are not possible in ADerrors
+                        # push!(res, uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths, int_cnfg_numbers, sum(rep_lengths)))
+                    end
+                else
+                    for i in 1:out_length
+                        res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths)
+                        # For irregular Monte Carlo chains one could use the following line but there are special cases which are not possible in ADerrors
+                        # res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths, int_cnfg_numbers, sum(rep_lengths))
+                    end
                 end
             end
+        end
 
-            if length(res) == 0
-                for i in 1:out_length
-                    push!(res, uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths))
-                    # For irregular Monte Carlo chains one could use the following line but there are special cases which are not possible in ADerrors
-                    # push!(res, uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths, int_cnfg_numbers, sum(rep_lengths)))
+        if haskey(entry, "cdata")
+            for element in entry["cdata"]
+                if element["layout"] != "1, 1"
+                   error("ADerror does not support non-scalar constants at the moment.")
                 end
-            else
-                for i in 1:out_length
-                    res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths)
-                    # For irregular Monte Carlo chains one could use the following line but there are special cases which are not possible in ADerrors
-                    # res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths, int_cnfg_numbers, sum(rep_lengths))
+
+                if length(res) == 0
+                    for i in 1:out_length
+                        push!(res, uwreal([0.0, sqrt(element["grad"][1][i] * element["cov"][1] * element["grad"][1][i])], element["id"]))
+                    end
+                else
+                    for i in 1:out_length
+                        res[i] += uwreal([0.0, sqrt(element["grad"][1][i] * element["cov"][1] * element["grad"][1][i])], element["id"])
+
+                    end
                 end
             end
         end
