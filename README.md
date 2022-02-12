@@ -1,4 +1,4 @@
-[![Run tests](https://github.com/fjosw/ADjson.jl/actions/workflows/test.yml/badge.svg)](https://github.com/fjosw/ADjson.jl/actions/workflows/test.yml)
+[![Run tests](https://github.com/fjosw/ADjson.jl/actions/workflows/test.yml/badge.svg)](https://github.com/fjosw/ADjson.jl/actions/workflows/test.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # ADjson.jl
 ADjson.jl provides [ADerrors.jl](https://gitlab.ift.uam-csic.es/alberto/aderrors.jl) with input and output routines for the `json.gz` file format used within [pyerrors](https://github.com/fjosw/pyerrors).
 The specifications of the `json.gz` format can be found in [the documentation of pyerrors](https://fjosw.github.io/pyerrors/pyerrors.html#export-data).

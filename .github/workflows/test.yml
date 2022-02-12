@@ -2,7 +2,8 @@ name: Run tests
 
 on:
   push:
-  pull_request:
+    branches:
+      - main
   schedule:
     - cron: '0 4 1 * *'
 
@@ -16,7 +17,6 @@ jobs:
         os: [ubuntu-latest, macOS-latest]
 
     steps:
-      - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
