@@ -22,7 +22,6 @@ ADjson.jl can read data types
 ADjson.jl can write data types
 - `Obs`
 
-Constants with errors can only be read in, writing is not yet supported.
 Also reading files with gaps in the Monte Carlo history is not yet supported as not all cases supported by pyerrors can be correctly initialized in ADerrors.
 
 ### Example
@@ -34,7 +33,7 @@ using ADjson
 # Create a test observable
 test_obs = uwreal(rand(100), "Test ensemble")
 
-# Write the observable to a file with a description 
+# Write the observable to a file with a description
 dump_to_json(test_obs, "test_file", "This file contains a test observable.")
 
 # Read the observable from disk
@@ -50,6 +49,9 @@ println(iamzero)
 ADjson.jl can also directly write a vector of `uwreal` objects to disc
 ```Julia
 test_obs = uwreal(rand(100), "Test ensemble") + uwreal(rand(20), "Second shorter test ensemble")
+test_obs *= uwreal([1.02, 0.01], "Renormalization")
 
-dump_to_json([test_obs, test_obs, test_obs], "vector_file", "File contains three times a test observable which is defined on two ensembles.")
+dump_to_json([test_obs, test_obs, test_obs],
+             "vector_file",
+             "File contains three times a test observable which is defined on two ensembles and a constant.")
 ```

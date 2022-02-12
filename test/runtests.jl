@@ -17,3 +17,14 @@ iamzero = test - test2
 uwerr(iamzero)
 @test isapprox(iamzero.mean, 0.0; atol = 1e-14)
 @test isapprox(iamzero.err, 0.0; atol = 1e-14)
+
+
+# Write file containing constant to disk, read it and check equality
+test *= uwreal([1.1, 0.2], "Constant")
+dump_to_json(test, "constant_file", "A constant")
+test2= load_json("constant_file")
+
+iamzero = test - test2
+uwerr(iamzero)
+@test isapprox(iamzero.mean, 0.0; atol = 1e-14)
+@test isapprox(iamzero.err, 0.0; atol = 1e-14)

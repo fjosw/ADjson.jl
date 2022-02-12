@@ -9,7 +9,7 @@ using ADerrors
 
 
 """
-    load_json(fname::String) 
+    load_json(fname::String)
 
 Load data from a json.gz file
 
@@ -136,7 +136,7 @@ end
 
 
 """
-    dump_to_json(p, fname::String, description="", indent=1) 
+    dump_to_json(p, fname::String, description="", indent=1)
 
 Dump data to a json.gz file
 
@@ -160,9 +160,9 @@ function dump_to_json(data, fname::String, description="", indent=1)
     if !isempty(description)
         jsonstring["description"] = description
     end
-    
+
     ws = ADerrors.wsg
-    
+
     vec_data = Vector{uwreal}()
     if data isa uwreal
         push!(vec_data, data)
@@ -171,21 +171,18 @@ function dump_to_json(data, fname::String, description="", indent=1)
     else
         error("Unkown data type.")
     end
-    
+
     for (index, p) in enumerate(vec_data)
         push!(jsonstring["obsdata"], Dict{String, Any}())
         jsonstring["obsdata"][index]["layout"] = "1"
         jsonstring["obsdata"][index]["type"] = "Obs"
         jsonstring["obsdata"][index]["value"] = [p.mean]
-        jsonstring["obsdata"][index]["data"] = []
 
+        i_data = 0
+        i_cdata = 0
         for i in 1:convert(Int32, ADerrors.unique_ids!(p, ws))
-            push!(jsonstring["obsdata"][index]["data"], Dict{String, Any}())        
-            jsonstring["obsdata"][index]["data"][i]["id"] = ADerrors.get_name_from_id(p.ids[i], ws)
-            jsonstring["obsdata"][index]["data"][i]["replica"] = []
-
             # Collect and rename replica names
-            my_rep_names = Vector{String}()    
+            my_rep_names = Vector{String}()
             for el in ADerrors.get_repnames_from_id(p.ids[i], ws)
                 loc = findlast("_", el)
                 push!(my_rep_names, el[1:Vector{Int}(loc)[1] - 1] * "|" * el[Vector{Int}(loc)[1] + 1:end])
@@ -201,24 +198,38 @@ function dump_to_json(data, fname::String, description="", indent=1)
 
             idc = convert(Vector{Int32}, ADerrors.get_repidc_from_id(p.ids[i], ws))
             if length(idc) == 2
-                println("Covobs case?")
-                println([convert(Int32, 1)])
-            end
-
-            # Write data
-            rep_indices = prepend!(cumsum(convert(Vector{Int32}, ws.fluc[ws.map_ids[p.ids[i]]].ivrep)), 0)
-            for j in 1:length(my_rep_names)
-                tmp = []
-                push!(jsonstring["obsdata"][index]["data"][i]["replica"], Dict{String, Any}())
-                jsonstring["obsdata"][index]["data"][i]["replica"][j]["name"] = my_rep_names[j]            
-                push!(tmp, idc[rep_indices[j] + 1:rep_indices[j + 1]])
-                push!(tmp, dt[rep_indices[j] + 1:rep_indices[j + 1]])
-                @cast deltas[i][j] := tmp[j][i]
-                jsonstring["obsdata"][index]["data"][i]["replica"][j]["deltas"] = deltas
+                # Write covobs data
+                i_cdata += 1
+                if !haskey(jsonstring["obsdata"][index], "cdata")
+                    jsonstring["obsdata"][index]["cdata"] = []
+                end
+                push!(jsonstring["obsdata"][index]["cdata"], Dict{String, Any}())
+                jsonstring["obsdata"][index]["cdata"][i_cdata]["id"] = ADerrors.get_name_from_id(p.ids[i], ws)
+                jsonstring["obsdata"][index]["cdata"][i_cdata]["layout"] = "1, 1"
+                jsonstring["obsdata"][index]["cdata"][i_cdata]["cov"] = [dt[1] ^ 2]
+                jsonstring["obsdata"][index]["cdata"][i_cdata]["grad"] = [[1.0]]
+            else
+                # Write Monte Carlo data
+                i_data += 1
+                if !haskey(jsonstring["obsdata"][index], "data")
+                    jsonstring["obsdata"][index]["data"] = []
+                end
+                push!(jsonstring["obsdata"][index]["data"], Dict{String, Any}())
+                jsonstring["obsdata"][index]["data"][i_data]["id"] = ADerrors.get_name_from_id(p.ids[i], ws)
+                jsonstring["obsdata"][index]["data"][i_data]["replica"] = []
+                rep_indices = prepend!(cumsum(convert(Vector{Int32}, ws.fluc[ws.map_ids[p.ids[i]]].ivrep)), 0)
+                for j in 1:length(my_rep_names)
+                    tmp = []
+                    push!(jsonstring["obsdata"][index]["data"][i_data]["replica"], Dict{String, Any}())
+                    jsonstring["obsdata"][index]["data"][i_data]["replica"][j]["name"] = my_rep_names[j]
+                    push!(tmp, idc[rep_indices[j] + 1:rep_indices[j + 1]])
+                    push!(tmp, dt[rep_indices[j] + 1:rep_indices[j + 1]])
+                    @cast deltas[i][j] := tmp[j][i]
+                    jsonstring["obsdata"][index]["data"][i_data]["replica"][j]["deltas"] = deltas
+                end
             end
         end
     end
-    
     if !endswith(fname, ".json.gz")
         fname *= ".json.gz"
     end
