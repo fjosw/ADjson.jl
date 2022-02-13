@@ -49,12 +49,12 @@ function load_json(fname::String)
 
     for entry in df["obsdata"]
 
-        if !(entry["type"] in ["Obs", "List"])
+        if !(entry["type"] in ["Obs", "List", "Array"])
             error("Type '" * entry["type"] * "' is not implemented." )
         end
 
         res = Vector{uwreal}()
-        out_length = parse(Int,(entry["layout"]))
+        out_length = prod([parse(Int, o) for o in split(entry["layout"], ", ")])
 
         if haskey(entry, "data")
             for element in entry["data"]
@@ -120,10 +120,13 @@ function load_json(fname::String)
             res[i] += entry["value"][i]
         end
 
+        # if entry["type"] == "Array"
+        #    push!(res_list, reshape(res, Tuple(Int(x) for x in [parse(Int, o) for o in split(entry["layout"], ", ")])))
         if length(res) == 1
             push!(res_list, res[1])
         else
-            push!(res_list, res)
+            push!(res_list, reshape(res, Tuple(Int(x) for x in [parse(Int, o) for o in split(entry["layout"], ", ")])))
+            # push!(res_list, res)
         end
     end
 
