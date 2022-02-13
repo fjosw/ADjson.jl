@@ -17,7 +17,7 @@ At the moment ADjson.jl supports only a subset of the full `json.gz`-pyerrors sp
 
 | | `Obs` | `List` | `Array` | `Corr` |
 | :---: | :---: | :---: | :---: | :---: |
-| read | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_multiplication_x: |
+| read | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | write | :heavy_check_mark: | :heavy_multiplication_x: | :heavy_multiplication_x: | :heavy_multiplication_x: |
 
 #### Notes

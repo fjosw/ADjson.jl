@@ -17,6 +17,11 @@ tmp = load_json("./data/array_out")
 display(tmp)
 println()
 
+# Check if file containing a correlator produced by pyerrors can be read.
+tmp = load_json("./data/corr_out")
+display(tmp)
+println()
+
 # Write file to disk, read it and check equality
 test = uwreal(rand(4000), "Test ensemble")
 dump_to_json(test, "test_file", "my description")

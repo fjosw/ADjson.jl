@@ -49,7 +49,7 @@ function load_json(fname::String)
 
     for entry in df["obsdata"]
 
-        if !(entry["type"] in ["Obs", "List", "Array"])
+        if !(entry["type"] in ["Obs", "List", "Array", "Corr"])
             error("Type '" * entry["type"] * "' is not implemented." )
         end
 
