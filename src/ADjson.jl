@@ -48,7 +48,6 @@ function load_json(fname::String)
     res_list = Vector{Any}()
 
     for entry in df["obsdata"]
-
         if !(entry["type"] in ["Obs", "List", "Array", "Corr"])
             error("Type '" * entry["type"] * "' is not implemented." )
         end
@@ -58,7 +57,6 @@ function load_json(fname::String)
 
         if haskey(entry, "data")
             for element in entry["data"]
-
                 conc_deltas = [Float64[] for b in 1:out_length]
                 int_cnfg_numbers = Int[]
                 rep_lengths = Int[]
@@ -68,9 +66,11 @@ function load_json(fname::String)
                     @cast deltas[i][j] := my_arr[j][i]
                     cnfg_numbers = convert(Array{Int,1}, deltas[1])
 
-                    for ch in 1:length(cnfg_numbers)
-                        if ch != cnfg_numbers[ch]
-                            error("Irregular Monte Carlo chain cannot be safely read into ADerrors.")
+                    if length(element["replica"]) > 1
+                        for ch in 1:length(cnfg_numbers)
+                            if ch != cnfg_numbers[ch]
+                                error("Irregular Monte Carlo chains for multiple replica cannot be safely read into ADerrors.")
+                            end
                         end
                     end
 
@@ -83,15 +83,19 @@ function load_json(fname::String)
 
                 if length(res) == 0
                     for i in 1:out_length
-                        push!(res, uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths))
-                        # For irregular Monte Carlo chains one could use the following line but there are special cases which are not possible in ADerrors
-                        # push!(res, uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths, int_cnfg_numbers, sum(rep_lengths)))
+                        if length(element["replica"]) > 1
+                            push!(res, uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths))
+                        else
+                            push!(res, uwreal(Vector{Float64}(conc_deltas[i]), element["id"], int_cnfg_numbers, int_cnfg_numbers[end]))
+                        end
                     end
                 else
                     for i in 1:out_length
-                        res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths)
-                        # For irregular Monte Carlo chains one could use the following line but there are special cases which are not possible in ADerrors
-                        # res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths, int_cnfg_numbers, sum(rep_lengths))
+                        if length(element["replica"]) > 1
+                            res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], rep_lengths)
+                        else
+                            res[i] += uwreal(Vector{Float64}(conc_deltas[i]), element["id"], int_cnfg_numbers, sum(rep_lengths))
+                        end
                     end
                 end
             end
@@ -110,7 +114,6 @@ function load_json(fname::String)
                 else
                     for i in 1:out_length
                         res[i] += uwreal([0.0, sqrt(element["grad"][1][i] * element["cov"][1] * element["grad"][1][i])], element["id"])
-
                     end
                 end
             end
@@ -120,13 +123,10 @@ function load_json(fname::String)
             res[i] += entry["value"][i]
         end
 
-        # if entry["type"] == "Array"
-        #    push!(res_list, reshape(res, Tuple(Int(x) for x in [parse(Int, o) for o in split(entry["layout"], ", ")])))
         if length(res) == 1
             push!(res_list, res[1])
         else
             push!(res_list, reshape(res, Tuple(Int(x) for x in [parse(Int, o) for o in split(entry["layout"], ", ")])))
-            # push!(res_list, res)
         end
     end
 
