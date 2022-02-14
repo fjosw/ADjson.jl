@@ -222,6 +222,11 @@ function dump_to_json(data, fname::String, description="", indent=1)
                 jsonstring["obsdata"][index]["data"][i_data]["replica"] = []
                 rep_indices = prepend!(cumsum(convert(Vector{Int32}, ws.fluc[ws.map_ids[p.ids[i]]].ivrep)), 0)
                 for j in 1:length(my_rep_names)
+                    for delta_entry in dt[rep_indices[j] + 1:rep_indices[j + 1]]
+                        if isapprox(delta_entry, 0.0; atol=1e-14)
+                            error("Irregular Monte Carlo chain cannot be safely written to json.gz file.")
+                        end
+                    end
                     tmp = []
                     push!(jsonstring["obsdata"][index]["data"][i_data]["replica"], Dict{String, Any}())
                     jsonstring["obsdata"][index]["data"][i_data]["replica"][j]["name"] = my_rep_names[j]
