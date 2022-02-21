@@ -1,7 +1,7 @@
 name = "ADjson"
 uuid = "88b066b3-fc66-4ee4-a111-a5be21ff4212"
 authors = ["Fabian Joswig <fabian.joswig@ed.ac.uk>"]
-version = "0.1.0"
+version = "1.0.0"
 
 [deps]
 ADerrors = "5e92007d-7bf1-471c-8ceb-4591b8b567a9"
