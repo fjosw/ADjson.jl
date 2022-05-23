@@ -1,5 +1,6 @@
 module ADjson
 
+using Statistics
 using GZip
 using JSON
 using TensorCast
@@ -77,7 +78,7 @@ function load_json(fname::String)
                     append!(int_cnfg_numbers, cnfg_numbers)
                     append!(rep_lengths, length(cnfg_numbers))
                     for i in 1:out_length
-                        append!(conc_deltas[i], Vector{Float64}(deltas[i + 1]))
+                        append!(conc_deltas[i], Vector{Float64}(deltas[i + 1]) .- mean(deltas[i + 1]))
                     end
                 end
 
