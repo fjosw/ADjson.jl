@@ -155,11 +155,11 @@ Dump data to a json.gz file
 """
 function dump_to_json(data, fname::String, description="", indent=1)
     jsonstring = Dict{String, Any}()
-    jsonstring["program"] = "ADjson 1.0"
+    jsonstring["program"] = "ADjson 1.1"
     jsonstring["who"] = ENV["USER"]
     jsonstring["host"] = gethostname() * ", " * Sys.MACHINE
     jsonstring["date"] = Dates.format(now(localzone()), "Y-mm-dd HH:MM:SS zzzz")
-    jsonstring["version"] = "1.0"
+    jsonstring["version"] = "1.1"
     jsonstring["obsdata"] = []
     if !isempty(description)
         jsonstring["description"] = description
