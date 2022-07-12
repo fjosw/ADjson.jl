@@ -3,6 +3,9 @@ module ADjson
 using Statistics
 using GZip
 using JSON
+using CodecZlib
+using SQLite
+using DataFrames
 using TensorCast
 using Dates
 using TimeZones
@@ -38,6 +41,36 @@ function load_json(fname::String)
     df = GZip.open(fname, "r") do io
         JSON.parse(io)
     end
+
+    return import_json_string(df)
+
+end
+
+
+"""
+    read_sql(db::String, sql::String)
+
+Extracts data from a SQLite database base on an SQL query, deserializes objects in json format and returns a DataFrame.
+
+# Arguments
+- `db::string`: Path to the SQLite database.
+- `sql:strong`: SQL query to be performed.
+"""
+function read_sql(db::String, sql::String)
+    db = SQLite.DB(db)
+    query = DBInterface.execute(db, sql)
+    df = DataFrame(query)
+    for name in names(df)
+        if eltype(df[!, name]) == Vector{UInt8}
+            df = transform(df, name => ByRow(x -> ADjson.import_json_string(JSON.parse(String(transcode(GzipDecompressor, String(x)))))) => name)
+            uwerr.(df[!, name])
+        end
+    end
+    return df
+end
+
+
+function import_json_string(df::Dict)
 
     println("Data has been written using ", df["program"])
     println("Format version ", df["version"])
@@ -155,7 +188,7 @@ Dump data to a json.gz file
 """
 function dump_to_json(data, fname::String, description="", indent=1)
     jsonstring = Dict{String, Any}()
-    jsonstring["program"] = "ADjson 1.1"
+    jsonstring["program"] = "ADjson 1.2"
     jsonstring["who"] = ENV["USER"]
     jsonstring["host"] = gethostname() * ", " * Sys.MACHINE
     jsonstring["date"] = Dates.format(now(localzone()), "Y-mm-dd HH:MM:SS zzzz")

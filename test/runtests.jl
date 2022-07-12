@@ -55,3 +55,7 @@ gapped_observable = uwreal(Vector{Float64}(collect(1:2:20)), "go", collect(1:2:2
 @test_throws ErrorException dump_to_json(gapped_observable, "this_should_not_work")
 
 @test_throws ErrorException load_json("this_file_does_not_exist")
+
+# Test SQLite functionality
+my_db = "./data/test_db.sqlite"
+df = ADjson.read_sql(my_db, "SELECT * from my_table")

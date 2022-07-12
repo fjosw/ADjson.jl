@@ -1,14 +1,17 @@
 name = "ADjson"
 uuid = "88b066b3-fc66-4ee4-a111-a5be21ff4212"
 authors = ["Fabian Joswig <fabian.joswig@ed.ac.uk>"]
-version = "1.1.0"
+version = "1.2.0"
 
 [deps]
 ADerrors = "5e92007d-7bf1-471c-8ceb-4591b8b567a9"
 BDIO = "375f315e-f2c4-11e9-2ef9-134f02f79e27"
+CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 GZip = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+SQLite = "0aa819cd-b072-5ff4-a722-6bc24af294d9"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 TensorCast = "02d47bb6-7ce6-556a-be16-bb1710789e2b"
 TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
