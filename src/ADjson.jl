@@ -3,6 +3,9 @@ module ADjson
 using Statistics
 using GZip
 using JSON
+using CodecZlib
+using SQLite
+using DataFrames
 using TensorCast
 using Dates
 using TimeZones
