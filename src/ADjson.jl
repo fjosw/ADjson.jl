@@ -39,6 +39,13 @@ function load_json(fname::String)
         JSON.parse(io)
     end
 
+    return import_json_string(df)
+
+end
+
+
+function import_json_string(df::Dict)
+
     println("Data has been written using ", df["program"])
     println("Format version ", df["version"])
     println("Written by ", df["who"], " on ", df["date"], " on host ", df["host"])
@@ -155,7 +162,7 @@ Dump data to a json.gz file
 """
 function dump_to_json(data, fname::String, description="", indent=1)
     jsonstring = Dict{String, Any}()
-    jsonstring["program"] = "ADjson 1.1"
+    jsonstring["program"] = "ADjson 1.2"
     jsonstring["who"] = ENV["USER"]
     jsonstring["host"] = gethostname() * ", " * Sys.MACHINE
     jsonstring["date"] = Dates.format(now(localzone()), "Y-mm-dd HH:MM:SS zzzz")
