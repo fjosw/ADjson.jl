@@ -44,6 +44,29 @@ function load_json(fname::String)
 end
 
 
+"""
+    read_sql(db::String, sql::String)
+
+Extracts data from a SQLite database base on an SQL query, deserializes objects in json format and returns a DataFrame.
+
+# Arguments
+- `db::string`: Path to the SQLite database.
+- `sql:strong`: SQL query to be performed.
+"""
+function read_sql(db::String, sql::String)
+    db = SQLite.DB(db)
+    query = DBInterface.execute(db, sql)
+    df = DataFrame(query)
+    for name in names(df)
+        if eltype(df[!, name]) == Vector{UInt8}
+            df = transform(df, name => ByRow(x -> ADjson.import_json_string(JSON.parse(String(transcode(GzipDecompressor, String(x)))))) => name)
+            uwerr.(df[!, name])
+        end
+    end
+    return df
+end
+
+
 function import_json_string(df::Dict)
 
     println("Data has been written using ", df["program"])
