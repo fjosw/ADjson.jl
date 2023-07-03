@@ -2,8 +2,6 @@ name: Run tests
 
 on:
   push:
-    branches:
-      - main
   schedule:
     - cron: '0 4 1 * *'
 
@@ -15,7 +13,7 @@ jobs:
       matrix:
         julia-version: ['1', '1.6']
         julia-arch: [x64]
-        os: [macOS-latest]
+        os: [macOS-latest, ubuntu-latest]
 
     steps:
       - uses: julia-actions/setup-julia@v1
